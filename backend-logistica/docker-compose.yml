@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0 # Puedes usar una versión diferente si lo prefieres (ej: mysql:latest o mysql:5.7)
+    container_name: mysql-logistica
+    environment:
+      MYSQL_ROOT_PASSWORD: admin # Contraseña para el usuario root de MySQL (¡Cambia esto en producción!)
+      MYSQL_DATABASE: logistica_db              # Nombre de la base de datos que se creará al inicio
+      MYSQL_USER: friki55                      # Usuario para la aplicación Spring Boot
+      MYSQL_PASSWORD: friki55       # Contraseña para el usuario de la aplicación (¡Cambia esto en producción!)
+    ports:
+      - "3306:3306"                              # Mapea el puerto 3306 del contenedor al puerto 3306 del host
+    volumes:
+      - mysql_data:/var/lib/mysql              # Volumen para persistir los datos de MySQL (opcional para desarrollo, ¡recomendado para producción!)
+    healthcheck:                                # Healthcheck para asegurar que MySQL esté listo antes de que Spring Boot intente conectarse
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  mysql_data:                                   # Define el volumen nombrado 'mysql_data'
